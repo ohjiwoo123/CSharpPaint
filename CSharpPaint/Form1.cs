@@ -49,12 +49,19 @@ namespace CSharpPaint
                 {
                     brush = new SolidBrush(Color.Red);
                 }
+                else
+                {
+                    brush = new SolidBrush(Color.Empty);
+                }
 
                 if (ar[i].m_bBold)
                 {
-                    pen.Width = 8.0F;
+                    pen.Width = 10.0F;
                 }
-
+                else
+                {
+                    pen.Width = 1.0F;
+                }
                 switch (ar[i].m_nShape)
                 {
                     case 0:
@@ -155,7 +162,7 @@ namespace CSharpPaint
                     MyShape.m_bFill = m_bFill;
                     MyShape.m_bBold = m_bBold;
                     MyShape.m_nShape = m_nShape;
-                    //Shape Myshape = new Shape(startPoint, endPoint, m_bFill, m_bBold, m_nShape);
+                    Shape Myshape = new Shape(startPoint, endPoint, m_bFill, m_bBold, m_nShape);
                     ar.Add(MyShape);
                     Invalidate();
 
@@ -164,10 +171,8 @@ namespace CSharpPaint
                     startPoint.Y = 0;
                     endPoint.X = 0;
                     endPoint.Y = 0;
-
                     // 객체에 추가한 후에 m_bFill, m_bBold, m_nShape 는 상태를 유지하고 x,y값은 초기화해서 shape class를 다시 할당 
                     MyShape = new Shape(startPoint, endPoint, m_bFill, m_bBold, m_nShape);
-                    // Invalidate();
                     m_bDrag = false;
                 }
             }
@@ -262,19 +267,8 @@ namespace CSharpPaint
                                                 FileAccess.Write);  // file access
             BinaryWriter bw = new BinaryWriter(fs);
 
-            bw.Write(ar.Count);
+            WriteInfo(bw);
 
-            for (int i = 0; i < ar.Count; i++)
-            {
-                Shape Myshape = new Shape(ar[i].startPoint, ar[i].endPoint, ar[i].m_bFill, ar[i].m_bBold, ar[i].m_nShape);
-                bw.Write(ar[i].startPoint.X);
-                bw.Write(ar[i].startPoint.Y);
-                bw.Write(ar[i].endPoint.X);
-                bw.Write(ar[i].endPoint.Y);
-                bw.Write(ar[i].m_bFill);
-                bw.Write(ar[i].m_bBold);
-                bw.Write(ar[i].m_nShape);
-            }
             // 초기화 
             ar.Clear();
             // 파일 닫기 
@@ -290,21 +284,8 @@ namespace CSharpPaint
                                                 FileAccess.Read);  // file access
             BinaryReader br = new BinaryReader(fs);
 
-            int count = br.ReadInt32();
-
-            for(int i=0; i< count; i++)
-            {
-                startPoint.X = br.ReadInt32();
-                startPoint.Y = br.ReadInt32();
-                endPoint.X = br.ReadInt32();
-                endPoint.Y = br.ReadInt32();
-                m_bFill = br.ReadBoolean();
-                m_bBold = br.ReadBoolean();
-                m_nShape = br.ReadInt32();
-                Shape Myshape = new Shape(startPoint, endPoint, m_bFill, m_bBold, m_nShape);
-                ar.Add(Myshape);
-                Invalidate();
-            }
+            Loadinfo(br);
+            
             // 로드가 끝난 후 값 초기화 
             startPoint.X = 0;
             startPoint.Y = 0;
@@ -317,6 +298,42 @@ namespace CSharpPaint
             br.Close();
             fs.Close();
             MessageBox.Show("불러오기가 완료되었습니다.");
+        }
+
+        public void WriteInfo(BinaryWriter bw)
+        {
+            bw.Write(ar.Count);
+
+            for (int i = 0; i < ar.Count; i++)
+            {
+                Shape Myshape = new Shape(ar[i].startPoint, ar[i].endPoint, ar[i].m_bFill, ar[i].m_bBold, ar[i].m_nShape);
+                bw.Write(ar[i].startPoint.X);
+                bw.Write(ar[i].startPoint.Y);
+                bw.Write(ar[i].endPoint.X);
+                bw.Write(ar[i].endPoint.Y);
+                bw.Write(ar[i].m_bFill);
+                bw.Write(ar[i].m_bBold);
+                bw.Write(ar[i].m_nShape);
+            }
+        }
+
+        public void Loadinfo(BinaryReader br)
+        {
+            int count = br.ReadInt32();
+
+            for (int i = 0; i < count; i++)
+            {
+                startPoint.X = br.ReadInt32();
+                startPoint.Y = br.ReadInt32();
+                endPoint.X = br.ReadInt32();
+                endPoint.Y = br.ReadInt32();
+                m_bFill = br.ReadBoolean();
+                m_bBold = br.ReadBoolean();
+                m_nShape = br.ReadInt32();
+                Shape Myshape = new Shape(startPoint, endPoint, m_bFill, m_bBold, m_nShape);
+                ar.Add(Myshape);
+                Invalidate();
+            }
         }
     }
     class Shape  
