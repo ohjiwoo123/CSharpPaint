@@ -1,5 +1,5 @@
 # CSharpPaint
-그림판(Collection+Save+Loadd) 완료
+그림판(Collection+Save+Load) 완료
 
 C++로도 그림판을 만들어 봤지만, 역시 처음부터 다시 짜는 건 쉽지 않았다.  
 단순히 직선 그리는 것에도 좀 헤맸다.  
